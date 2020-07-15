@@ -9,6 +9,7 @@ Le immagini devono essere salvate in formato PNG con trasparenza abilitata, e me
 
 Ogni immagine è rappresentata da un oggetto così strutturato:
 
+<pre>
 {
   "id" : 		"leone", 
   "canto":    "01",
@@ -36,15 +37,17 @@ Ogni immagine è rappresentata da un oggetto così strutturato:
 
   ]
 }
-    
+
+</pre>
 Ogni immagine/oggetto è membro dell'array "images" contenuto nell'oggetto principale "movements" nel file "move.js":
 
+<pre>
   movements = {
     "steps" 	: 60, // Numero delle volte che vengono incrementate le coordinate (x,y) dell'immagine.
     "interval" 	: 100, // Intervallo tra un incremento e l'altro.
     "images" 	:  []
    }
- 
+</pre> 
  
 Quindi ogni area soggetta a movimento automatico risulta raggiungibile tramite il percorso:
 
@@ -52,7 +55,8 @@ movements.images[imageIndex].areas[areaIndex]
 
 In ogni area è presente un oggetto"move" che ne definisce il movimento, che è l'unica parte di interesse per chi vuole aggiungere nuove immagini:
 
-  "move" : {
+<pre>
+"move" : {
     "type" : "simple", // ="path" if  multiple points (to be implemented)
     "points" : [], // empty if type is "simple" (to be implemented)
     "xstart" : 0, // Posizione iniziale; "0" se è la stessa dell'immagine originale statica.
@@ -60,5 +64,6 @@ In ogni area è presente un oggetto"move" che ne definisce il movimento, che è 
     "xinc" : -0.6, // Incremento orizzontale della posizione; positivo = verso destra
     "yinc" : 0     // Incremento verticale della posizione; positivo = verso il basso
   }
+</pre>
 
 L'immagine viene costruita all'interno del DIV "imgContainer".
