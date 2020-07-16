@@ -67,3 +67,11 @@ In ogni area è presente un oggetto"move" che ne definisce il movimento, che è 
 </pre>
 
 L'immagine viene costruita all'interno del DIV "imgContainer".
+
+<hr>
+Changelog
+
+0.0.3 - Adesso l'animazione tramite DIV è nascosta all'utente, usata solo per percaricare le immagini; una volta precaricate, vengono copiate
+in un canvas; questo dovrebbe rendere possibile esportare l'animazione in formato GIF. Listbox presente ma ancora non attiva.
+
+0.0.2 - Prima versione pubblica, ancora draft, con immagine non selezionabile (listbox presente ma non attiva).
