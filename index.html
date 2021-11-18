@@ -46,8 +46,8 @@ const urlParams = new URLSearchParams(window.location.search);
 image_to_animate = 1;
 speedFactor = 1;
 FRAMES_NUMBER = 50;
-canvasWidth = 800;
-canvasHeight = 600;
+canvasWidth = 1500;
+canvasHeight = 1500;
 
 if (urlParams.get('imgnum')) image_to_animate = urlParams.get('imgnum');
 if (urlParams.get('speed')) speedFactor = urlParams.get('speed') * 1.0;
@@ -125,8 +125,9 @@ $(document).ready(function() {
 	// that new image has loaded, fire the imageLoaded() callback.
 	// Serve per sapere quando sono state caricate tutte le immagini.
 	$("img").each(function(idx, img) {
-		$("<img>").on("error", imageNotFound);
-		$("<img>").on("load", imageLoaded(this)).attr("src", $(img).attr("src"));
+console.log(">>>>>>>>>",$("<img>").on);
+//		$("<img>").on("error", imageNotFound(img,idx));//.attr("src", $(img).attr("src"));
+		$("<img>").on("complete", imageLoaded(this)).attr("src", $(img).attr("src"));
 	});
 });
 
@@ -207,15 +208,19 @@ function avviaCreazioneGif() {
 
 
 
-function imageNotFound() {
-  document.getElementById("status").innerHTML = "**WARNING** - Image " + imagesLoaded + " not found.";
+function imageNotFound(a,i) {
+  console.log( "**WARNING** - Image " , a.src , " not found.");
+  document.getElementById("status").innerHTML += "**WARNING** - Image " + imagesLoaded + " not found.<br>";
+  authorizedArea[i] = false;
+  checkboxContainer.children[i].children[1].innerHTML = a.src +  " not found";
+  //a.src = "dummy.png";
 }
 
 
 
 function imageLoaded(caller) {
   imagesLoaded++;
-  console.log("Loaded " + imagesLoaded, caller);
+  console.log("Loaded " ,imagesLoaded, caller);
   document.getElementById("status").innerHTML = "Immagini caricate: " + imagesLoaded + "/" + totalImages + " (" + (100*imagesLoaded/totalImages).toFixed(0) + ")%";
   if (imagesLoaded == totalImages) {
     allImagesLoaded();
@@ -283,8 +288,12 @@ console.log("Caricamento immagini completato.");
 					imgDummy[areaIndex].setAttribute("class", "c_" + area.class);
 					imgDummy[areaIndex].setAttribute("width", 0); // Visualizzate solo nel canvas
 					imgDummy[areaIndex].setAttribute("height", 0);
-					imgDummy[areaIndex].src =  IMAGES_FOLDER + "/" + images_subfolder + "/" + area.src;
-console.log("Preparo ", IMAGES_FOLDER + "/" + images_subfolder + "/" + area.src);
+					try {
+						imgDummy[areaIndex].src =  IMAGES_FOLDER + "/" + images_subfolder + "/" + area.src;
+						console.log("Preparo ", IMAGES_FOLDER + "/" + images_subfolder + "/" + area.src);
+					} catch (e) {
+						console.log("WARNING - Immagine " + IMAGES_FOLDER + "/" + images_subfolder + "/" + area.src +  " non disponibile.");
+					}
 					document.getElementById("imgContainer").appendChild(imgDummy[areaIndex]);
 					
 					//Aggiunge checkbox di accensione/spegnimento area per debug
@@ -421,13 +430,9 @@ console.log("Riproduzione completata.");
 
   </head>
   <body>
-  Immagine:
-<!--
-<select name="animation" id="animation">
-</select>
+<h1>Divina commedia animata</h1>
+v.1.0.1<br>
 <br>
--->
-
 <br>
 <table>
 <tr>
@@ -436,7 +441,9 @@ console.log("Riproduzione completata.");
 <span id="cantica" name="cantica">-</span><br>
 <span id="verso" name="verso">-</span><br>
 <span id="testo" name="testo">-</span><br>
+-----------<br>
 <span id="status" name="status">-</span><br>
+-----------<br>
 <td style="white-space:nowrap; vertical-align:top">
 <div id="checkboxContainer" name="checkboxContainer"></div>
 </td>
@@ -456,6 +463,11 @@ console.log("Riproduzione completata.");
 <br>
 Immagini disponibili:<br>
 <span id="availableImages" name="availableImages"></span><br>
-
+Url personalizzato:<br>
+index.html?imgnum=XXX&steps=XXX&w=XXX&h=XXX<br>
+imgnum = numero dell'immagine da mostrare<br>
+steps = numero di frame da creare<br>
+w = larghezza immagine finale<br>
+h = altezza immagine finale<br>
   </body>
 </html>
