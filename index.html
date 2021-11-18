@@ -14,6 +14,7 @@
 		<script src="js/move.js"></script>
 		<script>
 
+// 1.0.1 Aggiunta lista link  in fondo
 // 1.0.0 Prima versione decente, senza errori gravi. Implemento visualizzazione errore in caso di file mancante.
 // 0.0.9 Scelta immagine in base a url
 // 0.0.8 Creazione GIF solo su pressione pulsante
@@ -24,33 +25,35 @@
 // 0.0.3 Animazione in canvas
 // 0.0.2 Prima versione su github
 
+
+
 myVar = null;
 
-            recorder = null;
-            record = false;
+recorder = null;
+record = false;
 
-			rec=null;
-			recorded = false;
+rec=null;
+recorded = false;
 
-			capturer = null;
+capturer = null;
 
 
-			saved=false;
-			recording=false;
+saved=false;
+recording=false;
 
-			const urlParams = new URLSearchParams(window.location.search);
+const urlParams = new URLSearchParams(window.location.search);
 
-			image_to_animate = 7;
-			speedFactor = 1;
-			FRAMES_NUMBER = 50;
-			canvasWidth = 800;
-			canvasHeight = 600;
+image_to_animate = 1;
+speedFactor = 1;
+FRAMES_NUMBER = 50;
+canvasWidth = 800;
+canvasHeight = 600;
 
-			if (urlParams.get('imgnum')) image_to_animate = urlParams.get('imgnum');
-			if (urlParams.get('speed')) speedFactor = urlParams.get('speed') * 1.0;
-			if (urlParams.get('steps')) FRAMES_NUMBER = urlParams.get('steps');//movements.steps;
-			if (urlParams.get('w')) canvasWidth = urlParams.get('w');
-			if (urlParams.get('h')) canvasHeight = urlParams.get('h');
+if (urlParams.get('imgnum')) image_to_animate = urlParams.get('imgnum');
+if (urlParams.get('speed')) speedFactor = urlParams.get('speed') * 1.0;
+if (urlParams.get('steps')) FRAMES_NUMBER = urlParams.get('steps');//movements.steps;
+if (urlParams.get('w')) canvasWidth = urlParams.get('w');
+if (urlParams.get('h')) canvasHeight = urlParams.get('h');
 
 
 console.log("Parameters:");
@@ -60,120 +63,164 @@ console.log("FRAMES_NUMBER:",FRAMES_NUMBER);
 console.log("canvasWidth:",canvasWidth);
 console.log("canvasHeight:",canvasHeight);
 
-            canvas= null;
-			context = null;
-			imgDummy = [];
+canvas= null;
+context = null;
+imgDummy = [];
 
 
-            IMAGES_FOLDER = "immagini";
-			images_subfolder = "";
-			playedSleep = 0;
-			playedFrames = 0;
-			intervalFPS = null;
-			avvia = false;
-			imagesLoaded = 0;
-			totalImages = 0;
-			posx = [];
-			posy = [];
-			authorizedArea = [];
-			
-		
+IMAGES_FOLDER = "immagini";
+images_subfolder = "";
+playedSleep = 0;
+playedFrames = 0;
+intervalFPS = null;
+avvia = false;
+imagesLoaded = 0;
+totalImages = 0;
+posx = [];
+posy = [];
+authorizedArea = [];
+
+capturer = null;
 
 
-			function exportVid(blob) {
-			  const vid = document.createElement('video');
-              vid.crossOrigin = 'anonymous';
-			  vid.src = URL.createObjectURL(blob);
+$(document).ready(function() {
+//////////////////////////////////////
+///////////// PAGE START /////////////
+//////////////////////////////////////
 
-			  vid.controls = true;
-			  document.body.appendChild(vid);
-			  const a = document.createElement('a');
-			  a.download = 'myvid.webm';
-			  a.href = vid.src;
-			  a.textContent = 'download the video';
-			  document.body.appendChild(a);
-			}
+	if (capturer === null) {
+		capturer = new CCapture( {
+			format: 'gif',
+			workersPath: 'js/',
+			framerate: 25,
+			verbose: true,
+			display: true,
+			name: movements.images[1].id
+		} );
+
+	}
+
+    addImagesLinks();
+	initPage(image_to_animate);
+	images_subfolder =  movements.images[image_to_animate].canto + "_" + movements.images[image_to_animate].cantica + "_" + movements.images[image_to_animate].verso;
+
+//console.log("**********" , commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[0].text);
+	verso1 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[0].text;
+	verso2 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[1].text;
+	verso3 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[2].text;
+	document.getElementById("canto").innerHTML = "Canto: " + movements.images[image_to_animate].canto ;
+	document.getElementById("cantica").innerHTML = "Cantica: " + movements.images[image_to_animate].cantica ;
+	document.getElementById("verso").innerHTML = "Verso: " + movements.images[image_to_animate].verso ;
+	document.getElementById("testo").innerHTML = "Testo: " + verso1 + " / " + verso2 + " / " + verso3;
+	canvas = document.getElementById("cnvContainer");
+	if (canvasWidth) canvas.width = canvasWidth;
+	if (canvasHeight) canvas.height = canvasHeight;
+	context = canvas.getContext('2d');
+
+	storePos();
+    resetPos();
+
+	// Step through each image in the DOM, clone it, attach an onload event
+	// listener, then set its source to the source of the original image. When
+	// that new image has loaded, fire the imageLoaded() callback.
+	// Serve per sapere quando sono state caricate tutte le immagini.
+	$("img").each(function(idx, img) {
+		$("<img>").on("error", imageNotFound);
+		$("<img>").on("load", imageLoaded(this)).attr("src", $(img).attr("src"));
+	});
+});
+
+
+function addImagesLinks() {
+	var ul = document.createElement("ul");
+	for (var i=0; i < movements.images.length; i++) {
+		var br = document.createElement("br");
+		var li = document.createElement("li");
+		var	link = document.createElement("a");
+		link.href = "index.html?imgnum=" + i;
+		link.innerHTML = movements.images[i].id;
+		link.appendChild(br);
+		li.appendChild(link);
+		ul.appendChild(li);
+	}
+	availableImages.appendChild(ul);
+}
+
+
+function exportVid(blob) {
+  const vid = document.createElement('video');
+vid.crossOrigin = 'anonymous';
+  vid.src = URL.createObjectURL(blob);
+
+  vid.controls = true;
+  document.body.appendChild(vid);
+  const a = document.createElement('a');
+  a.download = 'myvid.webm';
+  a.href = vid.src;
+  a.textContent = 'download the video';
+  document.body.appendChild(a);
+}
+
 
 
 function pippo(a) {
 console.log("pippo1",a);
 }
 
+
+
 function pippo2(a) {
 console.log("pippo2",a);
 }
+
+
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-			function avviaCreazioneGif() {
-				avvia=false;
-				record = true;
-				resetPos();
-				recording = true;
-				capturer.start();
-				capturer.on('progress',pippo(this));
-				capturer.on('process',pippo2(this));
-				avvia = true;
-				avviaAnimazione();			
-			}
 
-			$(document).ready(function() {	
-				 capturer = new CCapture( {
-					format: 'gif',
-					workersPath: 'js/',
-					framerate: 25,
-					verbose: true,
-					display: true,
-					name: movements.images[image_to_animate].id
-				} );
-				
-				images_subfolder =  movements.images[image_to_animate].canto + "_" + movements.images[image_to_animate].cantica + "_" + movements.images[image_to_animate].verso;
 
-console.log("**********" , commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[0].text);
-				verso1 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[0].text;
-				verso2 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[1].text;
-				verso3 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[2].text;
-				document.getElementById("canto").innerHTML = "Canto: " + movements.images[image_to_animate].canto ;
-				document.getElementById("cantica").innerHTML = "Cantica: " + movements.images[image_to_animate].cantica ;
-				document.getElementById("verso").innerHTML = "Verso: " + movements.images[image_to_animate].verso ;
-				document.getElementById("testo").innerHTML = "Testo: " + verso1 + " / " + verso2 + " / " + verso3;
-				canvas = document.getElementById("cnvContainer");
-				if (canvasWidth) canvas.width = canvasWidth;
-				if (canvasHeight) canvas.height = canvasHeight;
-				context = canvas.getContext('2d');
-
-				storePos();
-               	resetPos();
-
-				// Step through each image in the DOM, clone it, attach an onload event
-				// listener, then set its source to the source of the original image. When
-				// that new image has loaded, fire the imageLoaded() callback.
-				// Serve per sapere quando sono state caricate tutte le immagini.
-				$("img").each(function(idx, img) {
-					$("<img>").on("error", imageNotFound);
-					$("<img>").on("load", imageLoaded).attr("src", $(img).attr("src"));
-				});
+function initPage(im) {
+	capturer.format = 'gif';
+	capturer.workersPath = 'js/';
+	capturer.framerate = 25;
+	capturer.verbose = true;
+	capturer.display = true;
+	capturer.name = movements.images[im].id;
+}
 
 
 
-			});
+function avviaCreazioneGif() {
+	avvia=false;
+	record = true;
+	resetPos();
+	recording = true;
+	capturer.start();
+	capturer.on('progress',pippo(this));
+	capturer.on('process',pippo2(this));
+	avvia = true;
+	avviaAnimazione();			
+}
 
-			  function imageNotFound() {
-			    document.getElementById("status").innerHTML = "**WARNING** - Image " + imagesLoaded + " not found.";
-			  }
 
 
 
-			  function imageLoaded() {
-			    imagesLoaded++;
-			    console.log("Loaded " + imagesLoaded);
-			    document.getElementById("status").innerHTML = "Immagini caricate: " + imagesLoaded + "/" + totalImages + " (" + (100*imagesLoaded/totalImages).toFixed(0) + ")%";
-			    if (imagesLoaded == totalImages) {
-			      allImagesLoaded();
-			    }
-			  }
+function imageNotFound() {
+  document.getElementById("status").innerHTML = "**WARNING** - Image " + imagesLoaded + " not found.";
+}
+
+
+
+function imageLoaded(caller) {
+  imagesLoaded++;
+  console.log("Loaded " + imagesLoaded, caller);
+  document.getElementById("status").innerHTML = "Immagini caricate: " + imagesLoaded + "/" + totalImages + " (" + (100*imagesLoaded/totalImages).toFixed(0) + ")%";
+  if (imagesLoaded == totalImages) {
+    allImagesLoaded();
+  }
+}
 
 
 			function allImagesLoaded() {
@@ -237,6 +284,7 @@ console.log("Caricamento immagini completato.");
 					imgDummy[areaIndex].setAttribute("width", 0); // Visualizzate solo nel canvas
 					imgDummy[areaIndex].setAttribute("height", 0);
 					imgDummy[areaIndex].src =  IMAGES_FOLDER + "/" + images_subfolder + "/" + area.src;
+console.log("Preparo ", IMAGES_FOLDER + "/" + images_subfolder + "/" + area.src);
 					document.getElementById("imgContainer").appendChild(imgDummy[areaIndex]);
 					
 					//Aggiunge checkbox di accensione/spegnimento area per debug
@@ -332,22 +380,22 @@ console.log("Attendere prego...");
                     	context.drawImage(imgDummy[areaIndex], posleft,postop);
                     }
 				}
- console.log("playedFrames", playedFrames,posleft,speedFactor);				
+ //console.log("playedFrames", playedFrames,posleft,speedFactor);
                playedFrames++;               
                 
 				//requestAnimationFrame(moveImages);
 
 				if (record == true) {
-console.log("Registro frame ", playedFrames);				
+//console.log("Registro frame ", playedFrames);
 					capturer.capture( canvas ); // Salva fotogramma
 					if (playedFrames>FRAMES_NUMBER) {
-console.log("*Registrazione* completata.");
+//console.log("*Registrazione* completata.");
 						recorded = true;
 						record = false;
 						capturer.stop();
 						capturer.save(finito());
 						
-console.log("*Registrazione* SALVATA.");
+//console.log("*Registrazione* SALVATA.");
 					 }
 
 				} else {
@@ -358,7 +406,7 @@ console.log("*Registrazione* SALVATA.");
 console.log("Riproduzione completata.");
                 	resetPos();                	
  				}
-console.log("e ora?"); 				
+//console.log("e ora?");
 			}
 
 			</script>
@@ -405,7 +453,9 @@ console.log("e ora?");
 -----------------------------------------------------------<br>
 <div id="imgContainer" name="imgContainer" class="parent" >
 </div><br>
-
+<br>
+Immagini disponibili:<br>
+<span id="availableImages" name="availableImages"></span><br>
 
   </body>
 </html>
