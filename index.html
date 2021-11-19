@@ -101,7 +101,7 @@ gifst = document.getElementById( 'gifstatus' );
 			verbose: true,
 			display: true,
 			name: movements.images[image_to_animate].id,
-			onProgress: function( p ) {gifst.value += "CC progress inside: " + p.toFixed(0) + "%\n"; progress.innerHTML = "TOT=" + p.toFixed(0); console.log( "CC progress inside: " + p); progress.style.width = ( p * 100 ) + '%' }
+			onProgress: function( p ) {gifst.value += "CC progress inside: " + p.toFixed(0) + "%\n"; progress.innerHTML = "TOT=" + 100*p.toFixed(0); console.log( "CC progress inside: " + p); progress.width = ( p * 100 ) ; progress.style.width = ( p * 100 ) + '%' }
 		} );
 
 	}
