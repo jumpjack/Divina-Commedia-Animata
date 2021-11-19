@@ -91,6 +91,7 @@ $(document).ready(function() {
 ///////////// PAGE START /////////////
 //////////////////////////////////////
 progress = document.getElementById( 'progress' );
+gifst = document.getElementById( 'gifstatus' );
 
 	if (capturer === null) {
 		capturer = new CCapture( {
@@ -100,7 +101,7 @@ progress = document.getElementById( 'progress' );
 			verbose: true,
 			display: true,
 			name: movements.images[image_to_animate].id,
-			onProgress: function( p ) { document.getElementById("gifstatus").value += "CC progress inside: " + p + "\n"; console.log( "CC progress inside: " + p); progress.style.width = ( p * 100 ) + '%' }
+			onProgress: function( p ) {gifst.value += "CC progress inside: " + p + "\n"; console.log( "CC progress inside: " + p); progress.style.width = ( p * 100 ) + '%' }
 		} );
 
 	}
@@ -433,7 +434,7 @@ console.log("Riproduzione completata.");
 				  top: 0;
 				  left: 0;
 				}
-                #progress{ position: absolute; left: 0; top: 0; z-index: 100; height: 10px; background-color: #b70000;}
+                #progress{ position: absolute; left: 50; top: 20; z-index: 100; height: 30px; background-color: #ff0000;}
 </style>
 
 
