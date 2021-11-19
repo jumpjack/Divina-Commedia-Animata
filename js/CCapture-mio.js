@@ -953,7 +953,6 @@ console.log("callback",callback);
 
         var handler = _handlers[event];
         if ( handler ) {
-
             handler.apply( null, Array.prototype.slice.call( arguments, 1 ) );
 
         }
@@ -962,6 +961,7 @@ console.log("callback",callback);
 
     function _progress( progress ) {
 
+        	document.getElementById("gifstatus").value += "CCAPTURE progress: " + progress;
         _emit( 'progress', progress );
 
     }
