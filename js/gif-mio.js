@@ -1,5 +1,5 @@
 gifstatus = {value: "init"};
-myvar = setInterval(function () {gifstatus.value = a.index} , 10};
+myvar = setInterval(function () {gifstatus.value += a.index + "\n"} , 10});
 
 (function(c) {
 console.log("GIF - C:", c);
