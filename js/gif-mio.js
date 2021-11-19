@@ -1,4 +1,4 @@
-a = null;
+a = {index: "init"};
 gifstatus = {value: "init"};
 myvar = setInterval(function () {gifstatus.value += a.index + "\n"} , 10);
 
