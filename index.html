@@ -171,12 +171,14 @@ vid.crossOrigin = 'anonymous';
 
 function pippo(a) {
 console.log("pippo1",a);
+gifstatus += "PROCESS: " + a;
 }
 
 
 
 function pippo2(a) {
 console.log("pippo2",a);
+gifstatus += "PROgrESS: " + a;
 }
 
 
@@ -478,7 +480,7 @@ h = altezza immagine finale<br>
 
 <br>
 <br>
-Progress: <div id="progress"></div><br>
+Progress: <div id="progress">****</div><br>
 GIF export status: <textarea id="gifstatus" name="gifstatus" cols=100 rows=50></textarea><br>
   </body>
 </html>
