@@ -25,7 +25,7 @@
 // 0.0.3 Animazione in canvas
 // 0.0.2 Prima versione su github
 
-
+globalMessage = "initCC";
 
 myVar = null;
 
@@ -91,7 +91,7 @@ $(document).ready(function() {
 ///////////// PAGE START /////////////
 //////////////////////////////////////
 progress = document.getElementById( 'progress' );
-gifst = document.getElementById( 'gifstatus' );
+gifstatus = document.getElementById( 'gifstatus' );
 
 	if (capturer === null) {
 		capturer = new CCapture( {
@@ -101,7 +101,7 @@ gifst = document.getElementById( 'gifstatus' );
 			verbose: true,
 			display: true,
 			name: movements.images[image_to_animate].id,
-			onProgress: function( p ) {gifst.value += "CC progress inside: " + (100*p).toFixed(0) + "%\n"; progress.innerHTML = "TOT=" + (100*p).toFixed(0) + "%"; console.log( "CC progress inside: " + p); progress.width = ( p * 100 ) ; progress.style.width = ( p * 100 ) + '%' }
+			onProgress: function( p ) {gifstatus.value += "CC progress inside: " + (100*p).toFixed(0) + "%\n"; progress.innerHTML = "TOT=" + (100*p).toFixed(0) + "%"; console.log( "CC progress inside: " + p); progress.width = ( p * 100 ) ; progress.style.width = ( p * 100 ) + '%' }
 		} );
 
 	}
