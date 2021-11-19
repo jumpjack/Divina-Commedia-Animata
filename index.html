@@ -125,7 +125,7 @@ $(document).ready(function() {
 	// that new image has loaded, fire the imageLoaded() callback.
 	// Serve per sapere quando sono state caricate tutte le immagini.
 	$("img").each(function(idx, img) {
-console.log(">>>>>>>>>",$("<img>").on);
+
 //		$("<img>").on("error", imageNotFound(img,idx));//.attr("src", $(img).attr("src"));
 		$("<img>").on("complete", imageLoaded(this)).attr("src", $(img).attr("src"));
 	});
@@ -220,7 +220,7 @@ function imageNotFound(a,i) {
 
 function imageLoaded(caller) {
   imagesLoaded++;
-  console.log("Loaded " ,imagesLoaded, caller);
+  console.log("Loaded " ,imagesLoaded);
   document.getElementById("status").innerHTML = "Immagini caricate: " + imagesLoaded + "/" + totalImages + " (" + (100*imagesLoaded/totalImages).toFixed(0) + ")%";
   if (imagesLoaded == totalImages) {
     allImagesLoaded();
@@ -472,6 +472,6 @@ h = altezza immagine finale<br>
 
 <br>
 <br>
-GIF export status: <textarea id="gifstatus" name="gifstatus"></textarea><br>
+GIF export status: <textarea id="gifstatus" name="gifstatus" cols=50 rows=50></textarea><br>
   </body>
 </html>
