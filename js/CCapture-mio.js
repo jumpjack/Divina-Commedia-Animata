@@ -939,7 +939,7 @@ console.log("callback",callback);
 	function _log( message ) {
 		if( _verbose ) {
 			console.log( message );
-			status.value += "CCAPTURE - " + message;
+			document.getElementById("status").value += "CCAPTURE - " + message;
 		}
 	}
 
