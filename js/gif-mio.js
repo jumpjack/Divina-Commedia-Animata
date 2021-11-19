@@ -1,8 +1,8 @@
 
-myvar = setInterval(function () {document.getElementById("gifstatus").value += globalA + "\n"} , 10);
+
 
 (function(c) {
-    document.getElementById("gifstatus").innerHTML.value += "GIF - " + c.frames + " frames to extract....\n";
+    document.getElementById("gifstatus").value += "GIF - " + c.frames + " frames to extract....\n";
     function a(b, d) {
 		globalA = a;
         if ({}.hasOwnProperty.call(a.cache, b)) return a.cache[b];
