@@ -938,8 +938,8 @@ console.log("callback",callback);
 
 	function _log( message ) {
 		if( _verbose ) {
-			console.log( message, document.getElementById("status"));
-			document.getElementById("status").value += "CCAPTURE - " + message + "\n";
+			console.log();
+			document.getElementById("gifstatus").value += "CCAPTURE - " + message + "\n";
 		}
 	}
 
