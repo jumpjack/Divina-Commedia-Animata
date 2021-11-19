@@ -1,10 +1,8 @@
-a = {index: "init"};
-gifstatus = {value: "init"};
-myvar = setInterval(function () {gifstatus.value += a.index + "\n"} , 10);
+
+myvar = setInterval(function () {gifstatus.value += a + "\n"} , 10);
 
 (function(c) {
-console.log("GIF - C:", c);
-    gifstatus.value += "GIF - " + c.frames + " frames o extract....\n";
+    gifstatus.value += "GIF - " + c.frames + " frames to extract....\n";
     function a(b, d) {
         if ({}.hasOwnProperty.call(a.cache, b)) return a.cache[b];
         var e = a.resolve(b);

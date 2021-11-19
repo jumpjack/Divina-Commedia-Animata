@@ -1,5 +1,5 @@
 
-myvarCC = setInterval(function () {gifstatus.value = globalMessage} , 100);
+myvarCC = setInterval(function () {gifstatus.value += "CCint - " + globalMessage + "\n"} , 100);
 
 ;(function() {
 
