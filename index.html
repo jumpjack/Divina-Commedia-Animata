@@ -100,7 +100,7 @@ progress = document.getElementById( 'progress' );
 			verbose: true,
 			display: true,
 			name: movements.images[image_to_animate].id,
-			onProgress: function( p ) { gifstatus.value += "CC progress inside: " + p + "\n"; console.log( "CC progress inside: " + p); progress.style.width = ( p * 100 ) + '%' }
+			onProgress: function( p ) { document.getElementById("gifstatus").value += "CC progress inside: " + p + "\n"; console.log( "CC progress inside: " + p); progress.style.width = ( p * 100 ) + '%' }
 		} );
 
 	}
