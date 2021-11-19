@@ -175,7 +175,7 @@ console.log("GIF - C:", c);
             }, a.prototype.renderNextFrame = function() {
                 var c, a, b;
                 if (this.freeWorkers.length === 0) throw new Error('No free workers');
-                gifstatus.value += "GIF - " + 'starting frame....\n";
+                gifstatus.value += "GIF - " + "starting frame....\n";
                 return this.nextFrame >= this.frames.length ? void 0 : (c = this.frames[this.nextFrame++], b = this.freeWorkers.shift(), a = this.getTask(c), console.log('starting frame ' + (a.index + 1) + ' of ' + this.frames.length), this.activeWorkers.push(b), b.postMessage(a))
             }, a.prototype.getContextData = function(a) {
                 return a.getImageData(0, 0, this.options.width, this.options.height).data
