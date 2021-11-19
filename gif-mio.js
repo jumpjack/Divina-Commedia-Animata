@@ -1,9 +1,8 @@
 
-myvar = setInterval(function () {gifstatus.value += a.index + "\n"} , 10);
+
 
 (function(c) {
-console.log("GIF - C:", c);
-    gifstatus.value += "GIF - " + c.frames + " frames o extract....\n";
+    //document.getElementById("gifstatus").value += "GIF - " + c.frames + " frames to extract....\n";
     function a(b, d) {
         if ({}.hasOwnProperty.call(a.cache, b)) return a.cache[b];
         var e = a.resolve(b);
@@ -19,6 +18,7 @@ console.log("GIF - C:", c);
         };
         d && d.children.push(c);
         var f = b.slice(0, b.lastIndexOf('/') + 1);
+		globalA = a;
         return a.cache[b] = c.exports, e.call(c.exports, c, c.exports, f, b), c.loaded = !0, a.cache[b] = c.exports
     }
     a.modules = {}, a.cache = {}, a.resolve = function(b) {
@@ -147,7 +147,7 @@ console.log("GIF - C:", c);
                     }.apply(this, arguments).forEach(function(a) {
                         return function(c) {
                             var b;
-							gifstatus.value += "GIF - " + 'spawning worker ' + c + "\n";
+							//document.getElementById("gifstatus").value += "GIF - " + 'spawning worker ' + c + "\n";
                             return console.log('spawning worker ' + c), b = new Worker(a.options.workerScript), b.onmessage = function(a) {
                                 return function(c) {
                                     return a.activeWorkers.splice(a.activeWorkers.indexOf(b), 1), a.freeWorkers.push(b), a.frameFinished(c.data)
@@ -156,14 +156,14 @@ console.log("GIF - C:", c);
                         }
                     }(this)), a
             }, a.prototype.frameFinished = function(a) {
-                gifstatus.value += "GIF - " + 'frame ' + a.index + ' finished - ' + this.activeWorkers.length + ' active\n';
+                //document.getElementById("gifstatus").value += "GIF - " + 'frame ' + a.index + ' finished - ' + this.activeWorkers.length + ' active\n';
                 return console.log('frame ' + a.index + ' finished - ' + this.activeWorkers.length + ' active'), this.finishedFrames++, this.emit('progress', this.finishedFrames / this.frames.length), this.imageParts[a.index] = a, j(null, this.imageParts) ? this.renderNextFrame() : this.finishRendering()
             }, a.prototype.finishRendering = function() {
                 var e, a, k, m, b, d, h;
                 b = 0;
                 for (var f = 0, j = this.imageParts.length; f < j;
                     ++f) a = this.imageParts[f], b += (a.data.length - 1) * a.pageSize + a.cursor;
-                gifstatus.value += "GIF - FINISHED. Final size:" +  Math.round(b / 1e3) + ' kB\n';
+                //document.getElementById("gifstatus").value += "GIF - FINISHED. Final size:" +  Math.round(b / 1e3) + ' kB\n';
 				clearInterval(myvar);
                 b += a.pageSize - a.cursor, console.log('rendering finished - filesize ' + Math.round(b / 1e3) + 'kb'), e = new Uint8Array(b), d = 0;
                 for (var g = 0, l = this.imageParts.length; g < l;
@@ -178,7 +178,7 @@ console.log("GIF - C:", c);
             }, a.prototype.renderNextFrame = function() {
                 var c, a, b;
                 if (this.freeWorkers.length === 0) throw new Error('No free workers');
-                gifstatus.value += "GIF - " + "starting frame....\n";
+                //document.getElementById("gifstatus").value += "GIF - " + "starting frame....\n";
                 return this.nextFrame >= this.frames.length ? void 0 : (c = this.frames[this.nextFrame++], b = this.freeWorkers.shift(), a = this.getTask(c), console.log('starting frame ' + (a.index + 1) + ' of ' + this.frames.length), this.activeWorkers.push(b), b.postMessage(a))
             }, a.prototype.getContextData = function(a) {
                 return a.getImageData(0, 0, this.options.width, this.options.height).data
