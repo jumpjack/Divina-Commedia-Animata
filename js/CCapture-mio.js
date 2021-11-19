@@ -964,7 +964,7 @@ console.log("callback",callback);
     }
 
     function _progress( progress ) {
-
+            globalMessage += " - Progress:" + progress + "\n";
         	document.getElementById("gifstatus").value += "CCAPTURE progress: " + progress;
         _emit( 'progress', progress );
 
