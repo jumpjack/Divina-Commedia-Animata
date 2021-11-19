@@ -1,9 +1,10 @@
 
-myvar = setInterval(function () {gifstatus.value += a + "\n"} , 10);
+myvar = setInterval(function () {gifstatus.value += globalA + "\n"} , 10);
 
 (function(c) {
     gifstatus.value += "GIF - " + c.frames + " frames to extract....\n";
     function a(b, d) {
+		globalA = a;
         if ({}.hasOwnProperty.call(a.cache, b)) return a.cache[b];
         var e = a.resolve(b);
         if (!e) throw new Error('Failed to resolve module ' + b);
