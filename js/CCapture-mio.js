@@ -1,3 +1,7 @@
+globalMessage = "initCC";
+gifstatus = {"value" : "initCC"};
+myvarCC = setInterval(function () {gifstatus.value = globalMessage} , 100);
+
 ;(function() {
 
 "use strict";
@@ -940,6 +944,7 @@ console.log("callback",callback);
 		if( _verbose ) {
 			console.log(message);
 			document.getElementById("gifstatus").value += "CCAPTURE - " + message + "\n";
+			globalMessage = message;
 		}
 	}
 
