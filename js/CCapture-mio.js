@@ -937,7 +937,10 @@ console.log("callback",callback);
 	}
 
 	function _log( message ) {
-		if( _verbose ) console.log( message );
+		if( _verbose ) {
+			console.log( message );
+			status.value += "CCAPTURE - " + message;
+		}
 	}
 
     function _on( event, handler ) {

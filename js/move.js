@@ -1,29 +1,29 @@
 // Definition of areas and movements
 movements = {
-	"steps" 	: 60, //REPEAT
-	"interval" 	: 100, // in setInterval()
-	"images" 	:  [
-		{
-			"id" : 		"selva_oscura",
-			"canto":    "01",
-			"cantica":  "01",
-			"verso":    "01",
-			"text": "",
-			"areas" : [
-
-				{
-					"id" : 		"buio",
-					"name" : 	"buio",
-					"class" : 	"buio",
-					"src" : 	"buiod.png",
-					"layerOrder" : 0, // 0 = background
-					"move" : {
-						"type" : "simple", // ="path" if  multiple points (to be implemented)
-						"points" : [], // empty if type is "simple"
-						"xstart" : 0,
-						"ystart" : 0,
-						"xinc" : -0.6,
-						"yinc" : 0
+	"steps" 	: 60, // Duration in frames
+	"interval" 	: 100, // Time interval between frames (e.g. animation speed)
+	"images" 	:
+		[
+			{ // Image n.1 (imgnum=1); // Each image is split into many "areas", each one indepdendently moved
+				"id" : 		"selva_oscura",
+				"canto":    "01", // Location in Divina commedia; two digits number in txt format.
+				"cantica":  "01",
+				"verso":    "01",
+				"text": "",
+				"areas" : [  // Areas composing the image
+					{
+						"id" : 		"buio",
+						"name" : 	"buio",
+						"class" : 	"buio",
+						"src" : 	"buiod.png", // filename
+						"layerOrder" : 0, // 0 = background
+						"move" : {
+							"type" : "simple", // ="path" if  multiple points (to be implemented)
+							"points" : [], // empty if type is "simple"
+							"xstart" : 0, // Start position
+							"ystart" : 0,
+							"xinc" : -0.6, // Speed and direction of movement
+							"yinc" : 0
 					}
 				},
 
