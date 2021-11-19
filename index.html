@@ -168,7 +168,7 @@ vid.crossOrigin = 'anonymous';
 }
 
 
-
+/*
 function pippo(a) {
 console.log("pippo1",a);
 gifstatus += "PROCESS: " + a;
@@ -180,7 +180,7 @@ function pippo2(a) {
 console.log("pippo2",a);
 gifstatus += "PROgrESS: " + a;
 }
-
+*/
 
 
 function sleep(ms) {
@@ -205,8 +205,9 @@ function avviaCreazioneGif() {
 	record = true;
 	resetPos();
 	recording = true;
-	capturer.on('progress',pippo(this));
-	capturer.on('process',pippo2(this));
+	//capturer.on('progress',pippo(this));
+	//capturer.on('process',pippo2(this));
+console.log("Catturo con parametri:", capturer);
 	capturer.start();
 	avvia = true;
 	avviaAnimazione();			
