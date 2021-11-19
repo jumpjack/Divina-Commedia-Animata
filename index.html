@@ -101,7 +101,7 @@ gifst = document.getElementById( 'gifstatus' );
 			verbose: true,
 			display: true,
 			name: movements.images[image_to_animate].id,
-			onProgress: function( p ) {gifst.value += "CC progress inside: " + p + "\n"; console.log( "CC progress inside: " + p); progress.style.width = ( p * 100 ) + '%' }
+			onProgress: function( p ) {gifst.value += "CC progress inside: " + p.toFixed(0) + "%\n"; progress.innerHTML = p.toFixed(0); console.log( "CC progress inside: " + p); progress.style.width = ( p * 100 ) + '%' }
 		} );
 
 	}
@@ -482,7 +482,7 @@ h = altezza immagine finale<br>
 
 <br>
 <br>
-Progress: <div id="progress">****</div><br>
+Progress: <span id="progress">****</span><br><br><br>
 GIF export status: <textarea id="gifstatus" name="gifstatus" cols=100 rows=50></textarea><br>
   </body>
 </html>
