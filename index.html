@@ -82,11 +82,15 @@ authorizedArea = [];
 
 capturer = null;
 
+function showProgress(a) {
+	console.log(a);
+}
 
 $(document).ready(function() {
 //////////////////////////////////////
 ///////////// PAGE START /////////////
 //////////////////////////////////////
+progress = document.getElementById( 'progress' );
 
 	if (capturer === null) {
 		capturer = new CCapture( {
@@ -95,7 +99,8 @@ $(document).ready(function() {
 			framerate: 25,
 			verbose: true,
 			display: true,
-			name: movements.images[image_to_animate].id
+			name: movements.images[image_to_animate].id,
+			onProgress: function( p ) { progress.style.width = ( p * 100 ) + '%' }
 		} );
 
 	}
@@ -425,6 +430,7 @@ console.log("Riproduzione completata.");
 				  top: 0;
 				  left: 0;
 				}
+                #progress{ position: absolute; left: 0; top: 0; z-index: 100; height: 10px; background-color: #b70000;}
 </style>
 
 
@@ -472,6 +478,7 @@ h = altezza immagine finale<br>
 
 <br>
 <br>
+Progress: <div id="progress"></div><br>
 GIF export status: <textarea id="gifstatus" name="gifstatus" cols=100 rows=50></textarea><br>
   </body>
 </html>
