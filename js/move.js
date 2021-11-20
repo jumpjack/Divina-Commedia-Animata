@@ -821,6 +821,22 @@ movements = {
 					}
 				},
 
+				{
+					"id" : 		"primo-piano",
+					"name" : 	"primo-piano",
+					"class" : 	"primo-piano",
+					"src" : 	"primo-piano.png",
+					"layerOrder" : 0, // 0 = background
+					"move" : {
+						"type" : "simple", // ="path" if  multiple points (to be implemented)
+						"points" : [], // empty if type is "simple"
+						"xstart" : -10,
+						"ystart" : 0,
+						"xinc" : +1.3,
+						"yinc" : 0
+					}
+				},
+
 
 				{
 					"id" : 		"cornice",
