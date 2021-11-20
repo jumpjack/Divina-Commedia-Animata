@@ -1,4 +1,7 @@
 # Divina-Commedia-Animata
+![anim](https://github.com/jumpjack/Divina-Commedia-Animata/blob/master/immagini/01_01_46/anim.mini.gif)
+
+
 Le più belle illustrazioni della Divina Commedia, di Gustave Dorè e altri autori, animate e arricchite con effetti di tridimensionalità.
 
 Esistono molte edizioni cartacee di lusso della Divina Commedia, impreziosite dalle bellissime stampe di Gustave Dorè e altri grandi artisti del passato. Adesso è possibile godere di queste illustrazioni, nella lettura della Divina Commedia, in forma più moderna e coinvolgente, grazie all'animazione di oggetti e personaggi delle illustrazioni.
