@@ -164,7 +164,6 @@
                 for (var f = 0, j = this.imageParts.length; f < j;
                     ++f) a = this.imageParts[f], b += (a.data.length - 1) * a.pageSize + a.cursor;
                 //document.getElementById("gifstatus").value += "GIF - FINISHED. Final size:" +  Math.round(b / 1e3) + ' kB\n';
-				clearInterval(myvar);
                 b += a.pageSize - a.cursor, console.log('rendering finished - filesize ' + Math.round(b / 1e3) + 'kb'), e = new Uint8Array(b), d = 0;
                 for (var g = 0, l = this.imageParts.length; g < l;
                     ++g) {
