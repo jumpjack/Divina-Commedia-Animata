@@ -1,0 +1,504 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="generator" content="PSPad editor, www.pspad.com">
+  <title></title>
+		<script src="js/testo.js"></script>
+		<script src="js/download.js"></script>
+		<script src="js/webm-writer-0.2.0.js"></script>
+		<script src="js/CCapture-mio.js"></script>
+		<script src="js/gif-mio.js"></script>
+		<script src="js/CanvasRecorder.js "></script>
+		<script src="js/jquery.js"></script>
+		<script src="js/move.js"></script>
+		<script>
+
+// 1.0.1 Aggiunta lista link  in fondo
+// 1.0.0 Prima versione decente, senza errori gravi. Implemento visualizzazione errore in caso di file mancante.
+// 0.0.9 Scelta immagine in base a url
+// 0.0.8 Creazione GIF solo su pressione pulsante
+// 0.0.7 Proviamo con ccapture.js
+// 0.0.6 GIF export con canvasrecorder, ma è in realtime, lentissimo e funziona solo online, perchè in locale la canvas è "tainted"
+// 0.0.5 Tento di ridurre a 1 i setInterval()
+// 0.0.4 Tentativo di implementare ridimensionamento (fallito)
+// 0.0.3 Animazione in canvas
+// 0.0.2 Prima versione su github
+
+globalMessage = "initCC";
+globalA = "";
+
+myVar = null;
+
+recorder = null;
+record = false;
+
+rec=null;
+recorded = false;
+
+capturer = null;
+
+
+saved=false;
+recording=false;
+
+const urlParams = new URLSearchParams(window.location.search);
+
+image_to_animate = 1;
+speedFactor = 1;
+FRAMES_NUMBER = 50;
+canvasWidth = 1500;
+canvasHeight = 1500;
+
+if (urlParams.get('imgnum')) image_to_animate = urlParams.get('imgnum');
+if (urlParams.get('speed')) speedFactor = urlParams.get('speed') * 1.0;
+if (urlParams.get('steps')) FRAMES_NUMBER = urlParams.get('steps');//movements.steps;
+if (urlParams.get('w')) canvasWidth = urlParams.get('w');
+if (urlParams.get('h')) canvasHeight = urlParams.get('h');
+
+
+console.log("Parameters:");
+console.log("image_to_animate:",image_to_animate);
+console.log("speedFactor:",speedFactor);
+console.log("FRAMES_NUMBER:",FRAMES_NUMBER);
+console.log("canvasWidth:",canvasWidth);
+console.log("canvasHeight:",canvasHeight);
+
+canvas= null;
+context = null;
+imgDummy = [];
+
+
+IMAGES_FOLDER = "immagini";
+images_subfolder = "";
+playedSleep = 0;
+playedFrames = 0;
+intervalFPS = null;
+avvia = false;
+imagesLoaded = 0;
+totalImages = 0;
+posx = [];
+posy = [];
+authorizedArea = [];
+
+capturer = null;
+
+function showProgress(a) {
+	console.log(a);
+}
+
+$(document).ready(function() {
+//////////////////////////////////////
+///////////// PAGE START /////////////
+//////////////////////////////////////
+progress = document.getElementById( 'progress' );
+gifstatus = document.getElementById( 'gifstatus' );
+
+	if (capturer === null) {
+		capturer = new CCapture( {
+			format: 'gif',
+			workersPath: 'js/',
+			framerate: 25,
+			verbose: true,
+			display: true,
+			name: movements.images[image_to_animate].id,
+			onProgress: function( p ) {gifstatus.value += "CC progress inside: " + (100*p).toFixed(0) + "%\n"; progress.innerHTML = "TOT=" + (100*p).toFixed(0) + "%"; console.log( "CC progress inside: " + p); progress.width = ( p * 100 ) ; progress.style.width = ( p * 100 ) + '%' }
+		} );
+
+	}
+
+    addImagesLinks();
+	initPage(image_to_animate);
+	images_subfolder =  movements.images[image_to_animate].canto + "_" + movements.images[image_to_animate].cantica + "_" + movements.images[image_to_animate].verso;
+
+//console.log("**********" , commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[0].text);
+	versi = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children;
+
+		verso1 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[0].text;
+
+	if (versi.length > 1) {
+		verso2 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[1].text;
+	} else {
+		verso2 = "-";
+	}
+
+	if (versi.length > 2) {
+		verso3 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[2].text;
+	} else {
+		verso3 = "-";
+	}
+
+	document.getElementById("canto").innerHTML = "Canto: " + movements.images[image_to_animate].canto ;
+	document.getElementById("cantica").innerHTML = "Cantica: " + movements.images[image_to_animate].cantica ;
+	document.getElementById("verso").innerHTML = "Verso: " + movements.images[image_to_animate].verso ;
+	document.getElementById("testo").innerHTML = "Testo: " + verso1 + " / " + verso2 + " / " + verso3;
+	canvas = document.getElementById("cnvContainer");
+	if (canvasWidth) canvas.width = canvasWidth;
+	if (canvasHeight) canvas.height = canvasHeight;
+	context = canvas.getContext('2d');
+
+	storePos();
+    resetPos();
+
+	// Step through each image in the DOM, clone it, attach an onload event
+	// listener, then set its source to the source of the original image. When
+	// that new image has loaded, fire the imageLoaded() callback.
+	// Serve per sapere quando sono state caricate tutte le immagini.
+	$("img").each(function(idx, img) {
+
+//		$("<img>").on("error", imageNotFound(img,idx));//.attr("src", $(img).attr("src"));
+		$("<img>").on("complete", imageLoaded(this)).attr("src", $(img).attr("src"));
+	});
+});
+
+
+function addImagesLinks() {
+	var ul = document.createElement("ul");
+	for (var i=0; i < movements.images.length; i++) {
+		var br = document.createElement("br");
+		var li = document.createElement("li");
+		var	link = document.createElement("a");
+		link.href = "index.html?imgnum=" + i;
+		link.innerHTML = movements.images[i].id;
+		link.appendChild(br);
+		li.appendChild(link);
+		ul.appendChild(li);
+	}
+	availableImages.appendChild(ul);
+}
+
+
+function exportVid(blob) {
+  const vid = document.createElement('video');
+vid.crossOrigin = 'anonymous';
+  vid.src = URL.createObjectURL(blob);
+
+  vid.controls = true;
+  document.body.appendChild(vid);
+  const a = document.createElement('a');
+  a.download = 'myvid.webm';
+  a.href = vid.src;
+  a.textContent = 'download the video';
+  document.body.appendChild(a);
+}
+
+
+/*
+function pippo(a) {
+console.log("pippo1",a);
+gifstatus += "PROCESS: " + a;
+}
+
+
+
+function pippo2(a) {
+console.log("pippo2",a);
+gifstatus += "PROgrESS: " + a;
+}
+*/
+
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+
+function initPage(im) {
+	capturer.format = 'gif';
+	capturer.workersPath = 'js/';
+	capturer.framerate = 25;
+	capturer.verbose = true;
+	capturer.display = true;
+	capturer.name = movements.images[im].id;
+}
+
+
+
+function avviaCreazioneGif() {
+	avvia=false;
+	record = true;
+	resetPos();
+	recording = true;
+	//capturer.on('progress',pippo(this));
+	//capturer.on('process',pippo2(this));
+console.log("Catturo con parametri:", capturer);
+	capturer.start();
+	avvia = true;
+	avviaAnimazione();			
+}
+
+
+
+
+function imageNotFound(a,i) {
+  console.log( "**WARNING** - Image " , a.src , " not found.");
+  document.getElementById("status").innerHTML += "**WARNING** - Image " + imagesLoaded + " not found.<br>";
+  authorizedArea[i] = false;
+  checkboxContainer.children[i].children[1].innerHTML = a.src +  " not found";
+  //a.src = "dummy.png";
+}
+
+
+
+function imageLoaded(caller) {
+  imagesLoaded++;
+  console.log("Loaded " ,imagesLoaded);
+  document.getElementById("status").innerHTML = "Immagini caricate: " + imagesLoaded + "/" + totalImages + " (" + (100*imagesLoaded/totalImages).toFixed(0) + ")%";
+  if (imagesLoaded == totalImages) {
+    allImagesLoaded();
+  }
+}
+
+
+			function allImagesLoaded() {
+console.log("Caricamento immagini completato.");
+			    document.getElementById("status").innerHTML = "Immagini caricate: " + imagesLoaded + "/" + totalImages + " (" + (100*imagesLoaded/totalImages).toFixed(0) + ")%";
+				for(areaIndex = 0; areaIndex < totalImages ; areaIndex++) {
+					context.drawImage(imgDummy[areaIndex], 0, 0);
+				}
+				//capturer.start();
+				avvia = true;
+				avviaAnimazione();
+
+			}
+
+			function checkboxManager(chkbox,area) {
+				if (chkbox.checked==true) {
+					//chkbox.checked = false;
+					authorizedArea[area]=true;
+				}
+				
+				if (chkbox.checked==false) {
+					//chkbox.checked = "1";
+					authorizedArea[area]=false;
+				}
+
+			}
+
+			function checkboxLabelManager(area) {
+			/*	chkbox = document.getElementById("chk"+area);
+				if (chkbox.checked==true) {
+					chkbox.checked = false;
+					authorizedArea[area]=false;
+				}
+				if (chkbox.checked==false) {
+					chkbox.checked = true;
+					authorizedArea[area]=true;
+				}
+			*/
+			}
+
+
+			function tooltip(a) {
+				a.tooltip.visible=true;
+			}
+
+
+
+			function storePos() {
+				imgDummy = [];
+                areaIndex = 0;
+				totalImages = movements.images[image_to_animate].areas.length;
+				for (areaIndex = 0; areaIndex < totalImages ; areaIndex++) {
+					area = movements.images[image_to_animate].areas[areaIndex];
+					posx[areaIndex] = area.move.xstart;
+					posy[areaIndex] = area.move.ystart; 	
+					imgDummy.push(document.createElement("img"));
+					imgDummy[areaIndex].setAttribute("style","position=absolute, left=" + posy[areaIndex] + ",top=" + posy[areaIndex]);
+					imgDummy[areaIndex].setAttribute("id",area.id);
+					imgDummy[areaIndex].setAttribute("name",area.name);
+					imgDummy[areaIndex].setAttribute("class", "c_" + area.class);
+					imgDummy[areaIndex].setAttribute("width", 0); // Visualizzate solo nel canvas
+					imgDummy[areaIndex].setAttribute("height", 0);
+					try {
+						imgDummy[areaIndex].src =  IMAGES_FOLDER + "/" + images_subfolder + "/" + area.src;
+						console.log("Preparo ", IMAGES_FOLDER + "/" + images_subfolder + "/" + area.src);
+					} catch (e) {
+						console.log("WARNING - Immagine " + IMAGES_FOLDER + "/" + images_subfolder + "/" + area.src +  " non disponibile.");
+					}
+					document.getElementById("imgContainer").appendChild(imgDummy[areaIndex]);
+					
+					//Aggiunge checkbox di accensione/spegnimento area per debug
+					d = document.createElement("div");
+					
+					checkbox = document.createElement("input");				
+					checkbox.setAttribute("type", "checkbox");					
+					checkbox.setAttribute("name", "chk"+areaIndex);					
+					checkbox.setAttribute("id", "chk"+areaIndex);					
+					checkbox.setAttribute("checked", "1");					
+					checkbox.setAttribute("onclick", "checkboxManager(this," + areaIndex + ")");
+					checkbox.setAttribute("title", area.name);
+					d.appendChild(checkbox);
+								
+					lbl = document.createElement("label");	
+					lbl.id="lbl" + area.name;				
+					lbl.name="lbl" + area.name;				
+					lbl.for=area.name;				
+					lbl.innerHTML = "<a href='" +imgDummy[areaIndex].src + "'>" + area.name + "</a>";
+					//lbl.setAttribute("onclick", "checkboxLabelManager(" + areaIndex + ")");					
+					d.appendChild(lbl);
+					
+					document.getElementById("checkboxContainer").appendChild(d);
+					
+					authorizedArea.push(true); // Array aree da mostrare o no in base a checkbox
+				}
+
+			}
+
+
+			function resetPos() {
+
+				for (areaIndex = 0; areaIndex < movements.images[image_to_animate].areas.length ; areaIndex++) {
+	                document.getElementById(movements.images[image_to_animate].areas[areaIndex].id).style.left = posx[areaIndex];
+	                document.getElementById(movements.images[image_to_animate].areas[areaIndex].id).style.top  = posy[areaIndex];
+				}
+				playedSleep = 0;
+				playedFrames=0;
+			}
+
+
+
+			async function avviaAnimazione() {
+				if (intervalFPS==null)  {
+console.log("Avvio animazione");
+					playedSleep = 0;
+					playedFrames = 0;
+console.log("Chiamata a primo frame");
+				
+
+					for (var i=0; true; i++) {
+                    	moveImages();
+                    	if (record) {
+                    		requestAnimationFrame(moveImages);
+                    	} else {
+							await sleep(50);
+						}
+                	}
+				}
+			}
+
+
+			function finito() {
+				alert("Fatto");
+			}
+
+
+			function moveImages() {
+				if (!avvia) {
+console.log("Attendere prego...");
+					return;
+				}
+
+				if (1==1) {
+					w=document.getElementById(movements.images[image_to_animate].areas[0].id).width;
+					h=document.getElementById(movements.images[image_to_animate].areas[0].id).height;
+					context.fillStyle = "#FFFFFF";
+					context.fillRect(0, 0, w,h);
+				}
+
+				for (areaIndex = 0; areaIndex < movements.images[image_to_animate].areas.length ; areaIndex++) {
+					area =  movements.images[image_to_animate].areas[areaIndex];
+					
+	                posleft = document.getElementById(area.id).style.left.replace("px","") * 1.0
+					posleft = posleft + area.move.xinc *speedFactor;
+
+	                postop = document.getElementById(area.id).style.top.replace("px","") * 1.0
+					postop = postop + area.move.yinc *speedFactor;
+
+					newstyle =  "left:" + posleft + "px; " + "top:" + postop +"px; position:absolute";
+                    document.getElementById(area.id).style = newstyle;
+                    if (authorizedArea[areaIndex] == true) {
+                    	context.drawImage(imgDummy[areaIndex], posleft,postop);
+                    }
+				}
+ //console.log("playedFrames", playedFrames,posleft,speedFactor);
+               playedFrames++;               
+                
+				//requestAnimationFrame(moveImages);
+
+				if (record == true) {
+//console.log("Registro frame ", playedFrames);
+					capturer.capture( canvas ); // Salva fotogramma
+					if (playedFrames>FRAMES_NUMBER) {
+//console.log("*Registrazione* completata.");
+						recorded = true;
+						record = false;
+						capturer.stop();
+						capturer.save(finito());
+						
+//console.log("*Registrazione* SALVATA.");
+					 }
+
+				} else {
+					// registra solo su richiesta 
+				}
+
+				if (playedFrames>FRAMES_NUMBER) {
+console.log("Riproduzione completata.");
+                	resetPos();                	
+ 				}
+//console.log("e ora?");
+			}
+
+			</script>
+		<style>
+				.parent {
+				  position: relative;
+				  top: 0;
+				  left: 0;
+				}
+                #progress{ position: relative; left: 50; top: 20; z-index: 100; height: 30px; background-color: #ff0000;}
+</style>
+
+
+  </head>
+  <body>
+<h1>Divina commedia animata</h1>
+v.1.0.1<br>
+<a href="https://github.com/jumpjack/Divina-Commedia-Animata">Sorgenti<a><br>
+<a href="https://github.com/fabiovalse/Divina-Commedia-Visualization/blob/master/divina_commedia.json">Versi in formato JSON<a><br>
+<br>
+<br>
+<table>
+<tr>
+<button id="btnRecord" name="btnRecord" onclick="avviaCreazioneGif()">Crea GIF</button></br>
+<span id="canto" name="canto">-</span><br>
+<span id="cantica" name="cantica">-</span><br>
+<span id="verso" name="verso">-</span><br>
+<span id="testo" name="testo">-</span><br>
+-----------<br>
+<span id="status" name="status">-</span><br>
+-----------<br>
+<td style="white-space:nowrap; vertical-align:top">
+<div id="checkboxContainer" name="checkboxContainer"></div>
+</td>
+<td>
+<canvas id="cnvContainer" name="cnvContainer" width="1200" height="1500"></canvas>
+</td>
+</tr>
+</table>
+<br>
+<br>
+
+
+<br>
+-----------------------------------------------------------<br>
+<div id="imgContainer" name="imgContainer" class="parent" >
+</div><br>
+<br>
+Immagini disponibili:<br>
+<span id="availableImages" name="availableImages"></span><br>
+Url personalizzato:<br>
+index.html?imgnum=XXX&steps=XXX&w=XXX&h=XXX<br>
+imgnum = numero dell'immagine da mostrare<br>
+steps = numero di frame da creare<br>
+w = larghezza immagine finale<br>
+h = altezza immagine finale<br>
+
+<br>
+<br>
+Progress: <span id="progress">****</span><br><br><br>
+GIF export status: <textarea id="gifstatus" name="gifstatus" cols=100 rows=50></textarea><br>
+  </body>
+</html>
