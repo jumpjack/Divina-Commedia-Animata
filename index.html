@@ -112,9 +112,22 @@ gifstatus = document.getElementById( 'gifstatus' );
 	images_subfolder =  movements.images[image_to_animate].canto + "_" + movements.images[image_to_animate].cantica + "_" + movements.images[image_to_animate].verso;
 
 //console.log("**********" , commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[0].text);
-	verso1 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[0].text;
-	verso2 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[1].text;
-	verso3 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[2].text;
+	versi = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children;
+
+		verso1 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[0].text;
+
+	if (versi.length > 1) {
+		verso2 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[1].text;
+	} else {
+		verso2 = "-";
+	}
+
+	if (versi.length > 2) {
+		verso3 = commedia.children[movements.images[image_to_animate].canto*1-1].children[movements.images[image_to_animate].cantica*1-1].children[movements.images[image_to_animate].verso*1-1].children[2].text;
+	} else {
+		verso3 = "-";
+	}
+
 	document.getElementById("canto").innerHTML = "Canto: " + movements.images[image_to_animate].canto ;
 	document.getElementById("cantica").innerHTML = "Cantica: " + movements.images[image_to_animate].cantica ;
 	document.getElementById("verso").innerHTML = "Verso: " + movements.images[image_to_animate].verso ;
@@ -443,6 +456,7 @@ console.log("Riproduzione completata.");
   <body>
 <h1>Divina commedia animata</h1>
 v.1.0.1<br>
+<a href="https://github.com/fabiovalse/Divina-Commedia-Visualization/blob/master/divina_commedia.json">Testo JSON<a><br>
 <br>
 <br>
 <table>
