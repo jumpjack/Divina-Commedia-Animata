@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Displacement mapping with 2d Face</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+     <style>
+body {
+    background: black;
+    color: #ccee99;
+    text-align: center;
+    position: fixed;
+}
+
+#wrap {
+    border: 0px solid #333;  
+    width:100%;
+}
+
+#images img {
+    width: 100px;
+    height: auto;
+}
+</style>
+
+  
+</head>
+
+<body>
+  <div id="wrap">
+</div>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.0/pixi.min.js'></script>
+<script>
+function resize() {
+    if (window.innerWidth / window.innerHeight >= ratio) {
+        var w = window.innerHeight * ratio;
+        var h = window.innerHeight;
+    } else {
+        var w = window.innerWidth;
+        var h = window.innerWidth / ratio;
+    }
+    renderer.view.style.width = w + 'px';
+    renderer.view.style.height = h + 'px';
+}
+window.onresize = resize;
+  </script>
+    <script>
+     w=window.innerWidth, h = window.innerHeight;
+var renderer = new PIXI.WebGLRenderer(w, h);
+var cOutput = document.getElementById('wrap');
+cOutput.appendChild(renderer.view);
+
+var stage = new PIXI.Container();
+var container = new PIXI.Container();
+var foreground = new PIXI.Container();
+stage.addChild(container);
+stage.addChild(foreground); 
+
+var pixiFilterDisplacement;
+var pixiSpriteForegroundTexture;
+var mousex = w/2, mousey = h/2;
+var ploader = new PIXI.loaders.Loader();
+
+function init(){
+  console.log('init');
+  ploader.add('fg', 'main.png'); //insert Orignal 2d Image Here
+  ploader.add('depth', 'depth.png'); //insert Depth Map Here
+
+  ploader.once('complete', startMagic);
+  // Begin loading -
+  ploader.load();
+}
+
+function startMagic() {
+  pixiSpriteForegroundTexture = new PIXI.Sprite(ploader.resources.fg.texture);
+
+  foreground.addChild(pixiSpriteForegroundTexture);
+  
+  	pixiSpriteDepthTexture = new PIXI.Sprite(ploader.resources.depth.texture);
+    pixiFilterDisplacement = new PIXI.filters.DisplacementFilter(pixiSpriteDepthTexture, 0);
+    pixiSpriteForegroundTexture.filters = [pixiFilterDisplacement];
+    window.onmousemove = function(e) {
+      mousex = e.clientX;
+      mousey = e.clientY;
+    };
+  animate();
+}
+
+
+function animate() {
+console.log('anim');
+  pixiFilterDisplacement.scale.x = (window.innerWidth/2 - mousex) / 1;
+  pixiFilterDisplacement.scale.y = (window.innerHeight/2 - mousey) / 1;
+  pixiSpriteForegroundTexture.addChild(pixiSpriteDepthTexture);
+  pixiSpriteDepthTexture.renderable=false;
+   
+  renderer.render(stage);       
+  requestAnimationFrame(animate);
+}
+
+// Start -
+init();
+
+    </script>
+
+</body>
+</html>
